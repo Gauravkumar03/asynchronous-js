@@ -114,7 +114,7 @@ async function handleCreateRace() {
 	// TIP - remember to always check if a function takes parameters before calling it!
 
 	// TODO - call the async function runRace
-	// runRace(race.ID)
+	await runRace(store.race_id)
 }
 
 function runRace(raceID) {
@@ -130,6 +130,7 @@ function runRace(raceID) {
 				renderAt('#race', resultsView(raceData.positions)) // to render the results view
 				resolve(raceData) // resolve the promise
 			}
+			console.log(raceData)
 		}, 500)
 	/* 
 		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
@@ -203,6 +204,7 @@ function handleSelectTrack(target) {
 function handleAccelerate() {
 	console.log("accelerate button clicked")
 	// TODO - Invoke the API call to accelerate
+	accelerate(store.race_id)
 }
 
 // HTML VIEWS ------------------------------------------------
@@ -282,6 +284,7 @@ function renderRaceStartView(track) {
 }
 
 function resultsView(positions) {
+	let userPlayer = positions.find(e => e.id === parseInt(store.player_id))
 	userPlayer.driver_name += " (you)"
 	let count = 1
   
@@ -413,13 +416,16 @@ async function startRace(id) {
 		method: 'POST',
 		...defaultFetchOpts(),
 	})
-	.then(res => res.json())
-	.then(data => console.log(data))
 	.catch(err => console.log("Problem with getRace request::", err))
 }
 
-function accelerate(id) {
+async function accelerate(id) {
 	// POST request to `${SERVER}/api/races/${id}/accelerate`
 	// options parameter provided as defaultFetchOpts
 	// no body or datatype needed for this request
+	await fetch(`${SERVER}/api/races/${id}/accelerate`, {
+		method: 'POST',
+		...defaultFetchOpts(),
+	})
+	.catch(err => console.log("Problem with getRace request::", err))
 }
